@@ -372,9 +372,42 @@ select:focus-visible, textarea:focus-visible {
 
 /* ---------------------------------------------------------- Fullscreen */
 
-.sv-fullscreen .sv-sidebar { display: none; }
-.sv-fullscreen .sv-dashboard { grid-template-columns: 1fr; }
-.sv-fullscreen .sv-canvas-wrap { height: 70vh; }
+/* #visualizerRoot IS .sv-dashboard (same element), so these must be
+   compound selectors (no space) rather than descendant selectors — a
+   descendant selector like ".sv-fullscreen .sv-dashboard" can never match
+   an element against itself. Covers both the manual class toggle
+   (fallback for browsers without the Fullscreen API) and the real
+   :fullscreen / :-webkit-full-screen pseudo-classes used by the native API. */
+#visualizerRoot.sv-fullscreen,
+#visualizerRoot:fullscreen,
+#visualizerRoot:-webkit-full-screen {
+  grid-template-columns: 1fr;
+  background: var(--bg-body);
+  width: 100vw;
+  height: 100vh;
+  padding: 1.5rem;
+  margin: 0;
+  overflow-y: auto;
+}
+
+#visualizerRoot.sv-fullscreen .sv-sidebar,
+#visualizerRoot:fullscreen .sv-sidebar,
+#visualizerRoot:-webkit-full-screen .sv-sidebar {
+  display: none;
+}
+
+#visualizerRoot.sv-fullscreen .sv-canvas-wrap,
+#visualizerRoot:fullscreen .sv-canvas-wrap,
+#visualizerRoot:-webkit-full-screen .sv-canvas-wrap {
+  height: 70vh;
+}
+
+#visualizerRoot.sv-fullscreen .sv-stage,
+#visualizerRoot:fullscreen .sv-stage,
+#visualizerRoot:-webkit-full-screen .sv-stage {
+  overflow-y: auto;
+  max-height: 100%;
+}
 
 /* -------------------------------------------------------------- Mobile */
 

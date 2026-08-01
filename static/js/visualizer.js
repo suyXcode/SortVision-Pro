@@ -45,6 +45,7 @@
     resumeBtn: document.getElementById("resumeBtn"),
     resetBtn: document.getElementById("resetBtn"),
     fullscreenBtn: document.getElementById("fullscreenBtn"),
+    fullscreenLabel: document.getElementById("fullscreenLabel"),
     algoTitle: document.getElementById("algoTitle"),
     badgeBest: document.getElementById("badgeBest"),
     badgeAvg: document.getElementById("badgeAvg"),
@@ -379,13 +380,81 @@
   }
 
   // ------------------------------------------------------------ Fullscreen --
+  //
+  // Prefers the real browser Fullscreen API (covers the whole screen,
+  // responds correctly to Esc, works with screen readers/OS chrome) and
+  // falls back to a CSS-only "fullscreen" class for browsers that don't
+  // support requestFullscreen on arbitrary elements (e.g. iOS Safari).
+
+  let fullscreenIsFallback = false;
+
+  function nativeFullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function requestNativeFullscreen(el) {
+    const request = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!request) return Promise.reject(new Error("Fullscreen API not supported."));
+    const result = request.call(el);
+    return result instanceof Promise ? result : Promise.resolve();
+  }
+
+  function exitNativeFullscreen() {
+    const exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (!exit) return Promise.resolve();
+    const result = exit.call(document);
+    return result instanceof Promise ? result : Promise.resolve();
+  }
+
+  function isFullscreenActive() {
+    return !!nativeFullscreenElement() || els.root.classList.contains("sv-fullscreen");
+  }
+
+  function syncFullscreenUI(isFull) {
+    const icon = els.fullscreenBtn.querySelector("i");
+    icon.className = isFull ? "fa-solid fa-compress" : "fa-solid fa-expand";
+    els.fullscreenLabel.textContent = isFull ? "Exit Fullscreen" : "Fullscreen";
+    els.root.classList.toggle("sv-fullscreen", isFull);
+  }
+
+  async function enterFullscreen() {
+    try {
+      await requestNativeFullscreen(els.root);
+      fullscreenIsFallback = false;
+      // syncFullscreenUI runs via the fullscreenchange listener below.
+    } catch (err) {
+      fullscreenIsFallback = true;
+      syncFullscreenUI(true);
+    }
+  }
+
+  async function exitFullscreen() {
+    if (nativeFullscreenElement()) {
+      await exitNativeFullscreen();
+      // syncFullscreenUI runs via the fullscreenchange listener below.
+    } else {
+      fullscreenIsFallback = false;
+      syncFullscreenUI(false);
+    }
+  }
 
   function toggleFullscreen() {
-    els.root.classList.toggle("sv-fullscreen");
-    const icon = els.fullscreenBtn.querySelector("i");
-    const isFull = els.root.classList.contains("sv-fullscreen");
-    icon.className = isFull ? "fa-solid fa-compress" : "fa-solid fa-expand";
-    els.fullscreenBtn.lastChild.textContent = isFull ? " Exit Fullscreen" : " Fullscreen";
+    if (isFullscreenActive()) {
+      exitFullscreen();
+    } else {
+      enterFullscreen();
+    }
+  }
+
+  function initFullscreenListeners() {
+    const handler = () => {
+      // Native fullscreen was exited (including via Esc) or entered outside
+      // our own toggle call — keep the button/icon/layout in sync either way.
+      if (fullscreenIsFallback) return;
+      syncFullscreenUI(!!nativeFullscreenElement());
+    };
+    document.addEventListener("fullscreenchange", handler);
+    document.addEventListener("webkitfullscreenchange", handler);
   }
 
   // ----------------------------------------------------------------- Init --
@@ -403,6 +472,7 @@
     els.resetBtn.addEventListener("click", resetPlayback);
     els.downloadReportBtn.addEventListener("click", downloadReport);
     els.fullscreenBtn.addEventListener("click", toggleFullscreen);
+    initFullscreenListeners();
 
     // Preselect algorithm from ?algo= query param, if present.
     const params = new URLSearchParams(window.location.search);
