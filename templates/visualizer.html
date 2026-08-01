@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Visualizer — SortVision Pro{% endblock %}
+
+{% block content %}
+<div class="sv-dashboard" id="visualizerRoot">
+
+  <aside class="sv-sidebar" id="svSidebar">
+    <div class="sv-sidebar-section">
+      <h6 class="sv-sidebar-heading"><i class="fa-solid fa-shuffle"></i> Array Source</h6>
+
+      <div class="sv-tabs" role="tablist">
+        <button class="sv-tab active" data-tab="random" type="button">Random</button>
+        <button class="sv-tab" data-tab="manual" type="button">Manual</button>
+      </div>
+
+      <div class="sv-tab-panel" data-panel="random">
+        <label class="sv-label">Array Size <span id="sizeVal" class="sv-label-val">30</span></label>
+        <input type="range" class="form-range sv-range" id="arraySize" min="5" max="150" value="30">
+
+        <div class="row g-2 mt-2">
+          <div class="col-6">
+            <label class="sv-label">Min Value</label>
+            <input type="number" class="form-control sv-input" id="minValue" value="5">
+          </div>
+          <div class="col-6">
+            <label class="sv-label">Max Value</label>
+            <input type="number" class="form-control sv-input" id="maxValue" value="500">
+          </div>
+        </div>
+        <button class="sv-btn sv-btn-gold w-100 mt-3" id="generateBtn">
+          <i class="fa-solid fa-dice"></i> Generate Random Array
+        </button>
+      </div>
+
+      <div class="sv-tab-panel d-none" data-panel="manual">
+        <label class="sv-label">Enter numbers (comma or space separated)</label>
+        <textarea class="form-control sv-input" id="manualInput" rows="3" placeholder="e.g. 42, 17, 8, 99, 3, 56"></textarea>
+        <button class="sv-btn sv-btn-outline w-100 mt-2" id="useManualBtn">
+          <i class="fa-solid fa-check"></i> Use This Array
+        </button>
+      </div>
+    </div>
+
+    <div class="sv-sidebar-section">
+      <h6 class="sv-sidebar-heading"><i class="fa-solid fa-layer-group"></i> Algorithm</h6>
+      <select class="form-select sv-input" id="algoSelect">
+        {% for algo in algorithms %}
+        <option value="{{ algo.key }}">{{ algo.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="sv-sidebar-section">
+      <h6 class="sv-sidebar-heading"><i class="fa-solid fa-gauge-high"></i> Animation Speed</h6>
+      <input type="range" class="form-range sv-range" id="speedRange" min="1" max="100" value="60">
+      <div class="d-flex justify-content-between sv-label-val">
+        <span>Slow</span><span>Fast</span>
+      </div>
+    </div>
+
+    <div class="sv-sidebar-section">
+      <h6 class="sv-sidebar-heading"><i class="fa-solid fa-sliders"></i> Playback</h6>
+      <div class="sv-playback-grid">
+        <button class="sv-btn sv-btn-gold" id="sortBtn"><i class="fa-solid fa-play"></i> Sort</button>
+        <button class="sv-btn sv-btn-outline" id="pauseBtn" disabled><i class="fa-solid fa-pause"></i> Pause</button>
+        <button class="sv-btn sv-btn-outline" id="resumeBtn" disabled><i class="fa-solid fa-play"></i> Resume</button>
+        <button class="sv-btn sv-btn-outline" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      </div>
+      <button class="sv-btn sv-btn-ghost w-100 mt-2" id="fullscreenBtn">
+        <i class="fa-solid fa-expand"></i> Fullscreen
+      </button>
+    </div>
+  </aside>
+
+  <section class="sv-stage">
+    <div class="sv-stage-header">
+      <div>
+        <h1 class="sv-stage-title" id="algoTitle">Bubble Sort</h1>
+        <p class="sv-stage-sub" id="algoBadgeRow">
+          <span class="sv-badge" id="badgeBest">Best: —</span>
+          <span class="sv-badge" id="badgeAvg">Avg: —</span>
+          <span class="sv-badge" id="badgeWorst">Worst: —</span>
+          <span class="sv-badge" id="badgeSpace">Space: —</span>
+        </p>
+      </div>
+      <div class="sv-legend">
+        <span><i class="sv-dot sv-dot-default"></i> Default</span>
+        <span><i class="sv-dot sv-dot-compare"></i> Comparing</span>
+        <span><i class="sv-dot sv-dot-swap"></i> Swapping</span>
+        <span><i class="sv-dot sv-dot-min"></i> Minimum</span>
+        <span><i class="sv-dot sv-dot-pivot"></i> Pivot</span>
+        <span><i class="sv-dot sv-dot-sorted"></i> Sorted</span>
+      </div>
+    </div>
+
+    <div class="sv-canvas-wrap">
+      <div class="sv-canvas" id="barCanvas"></div>
+      <div class="sv-canvas-empty" id="canvasEmpty">
+        <i class="fa-solid fa-chart-simple"></i>
+        <p>Generate or enter an array, then hit Sort.</p>
+      </div>
+    </div>
+
+    <div class="sv-progress-row">
+      <div class="progress sv-progress">
+        <div class="progress-bar" id="sortProgress" style="width:0%"></div>
+      </div>
+      <span id="stepCounter">Step 0 / 0</span>
+    </div>
+
+    <div class="row g-3 mt-1">
+      <div class="col-lg-7">
+        <div class="sv-card sv-results-card">
+          <h6 class="sv-card-heading"><i class="fa-solid fa-list-check"></i> Execution Results</h6>
+          <div class="sv-results-grid" id="resultsGrid">
+            <div><span>Algorithm</span><strong id="resAlgo">—</strong></div>
+            <div><span>Execution Time</span><strong id="resTime">—</strong></div>
+            <div><span>Comparisons</span><strong id="resComparisons">—</strong></div>
+            <div><span>Swaps</span><strong id="resSwaps">—</strong></div>
+            <div><span>Memory Usage</span><strong id="resMemory">—</strong></div>
+            <div><span>Array Length</span><strong id="resLength">—</strong></div>
+            <div><span>Stable</span><strong id="resStable">—</strong></div>
+            <div><span>In Place</span><strong id="resInPlace">—</strong></div>
+            <div><span>Sorted Successfully</span><strong id="resSorted">—</strong></div>
+          </div>
+          <button class="sv-btn sv-btn-outline mt-3" id="downloadReportBtn" disabled>
+            <i class="fa-solid fa-file-arrow-down"></i> Download Report
+          </button>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="sv-card">
+          <h6 class="sv-card-heading"><i class="fa-solid fa-chart-column"></i> Run Chart</h6>
+          <canvas id="statsChart" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="sv-card mt-3" id="learnPanel">
+      <h6 class="sv-card-heading"><i class="fa-solid fa-graduation-cap"></i> How <span id="learnAlgoName">this algorithm</span> Works</h6>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <p class="sv-learn-label">Description</p>
+          <p id="learnDescription" class="sv-learn-text">—</p>
+          <p class="sv-learn-label">Working Principle</p>
+          <p id="learnPrinciple" class="sv-learn-text">—</p>
+        </div>
+        <div class="col-lg-6">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <p class="sv-learn-label">Advantages</p>
+              <ul class="sv-learn-list" id="learnAdvantages"></ul>
+            </div>
+            <div class="col-md-6">
+              <p class="sv-learn-label">Disadvantages</p>
+              <ul class="sv-learn-list" id="learnDisadvantages"></ul>
+            </div>
+          </div>
+          <p class="sv-learn-label mt-2">Applications</p>
+          <ul class="sv-learn-list" id="learnApplications"></ul>
+        </div>
+      </div>
+      <p class="sv-learn-label">Pseudo Code</p>
+      <pre class="sv-pseudocode" id="learnPseudocode">—</pre>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/visualizer.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}SortVision Pro — Premium Sorting Algorithm Visualizer{% endblock %}
+
+{% block content %}
+
+<section class="sv-hero">
+  <div class="sv-hero-ornament" aria-hidden="true"></div>
+  <div class="container-fluid px-4">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <p class="sv-eyebrow">Nine Algorithms &middot; One Royal Dashboard</p>
+        <h1 class="sv-hero-title">Watch sorting algorithms <em>think</em>, not just finish.</h1>
+        <p class="sv-hero-sub">
+          SortVision Pro animates every comparison, swap, and pivot in real time —
+          so the difference between O(n log n) and O(n&sup2;) stops being an
+          abstraction on a whiteboard and becomes something you can watch happen.
+        </p>
+        <div class="sv-hero-actions">
+          <a href="{{ url_for('views.visualizer') }}" class="sv-btn sv-btn-gold">
+            <i class="fa-solid fa-play"></i> Launch Visualizer
+          </a>
+          <a href="{{ url_for('views.compare') }}" class="sv-btn sv-btn-outline">
+            <i class="fa-solid fa-scale-balanced"></i> Compare Algorithms
+          </a>
+        </div>
+        <div class="sv-hero-stats">
+          <div><strong>9</strong><span>Algorithms</span></div>
+          <div><strong>6</strong><span>Live Color States</span></div>
+          <div><strong>&infin;</strong><span>Random Arrays</span></div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="sv-hero-bars" aria-hidden="true">
+          {% for h in [38, 62, 22, 80, 48, 95, 30, 68, 15, 55] %}
+          <span style="--h: {{ h }}%; --d: {{ loop.index0 }}"></span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sv-section">
+  <div class="container-fluid px-4">
+    <p class="sv-eyebrow">What you can do</p>
+    <h2 class="sv-section-title">Every feature of a proper algorithms lab</h2>
+    <div class="row g-4 mt-2">
+      {% set features = [
+        ("fa-keyboard", "Manual or Random Arrays", "Type your own array or generate one with a custom size and value range."),
+        ("fa-gauge-high", "Speed Control", "Slide from a deliberate crawl to a rapid-fire sort using the animation speed control."),
+        ("fa-pause", "Pause, Resume, Reset", "Full playback control over every animation — stop mid-sort and pick up exactly where you left off."),
+        ("fa-code-compare", "Side-by-Side Compare", "Race two or more algorithms on the identical array and see the stats diverge."),
+        ("fa-chart-column", "Live Charts", "Chart.js visualizations of execution time, comparisons, swaps, and memory usage."),
+        ("fa-file-arrow-down", "Downloadable Reports", "Export a plain-text report of any run or comparison for your notes."),
+        ("fa-book-open", "Learning Hub", "Descriptions, working principles, pseudocode, pros, cons, and applications for every algorithm."),
+        ("fa-expand", "Fullscreen Mode", "Distraction-free, fullscreen visualization for presentations or focused study."),
+      ] %}
+      {% for icon, title, text in features %}
+      <div class="col-md-6 col-xl-3">
+        <div class="sv-card sv-feature-card">
+          <div class="sv-feature-icon"><i class="fa-solid {{ icon }}"></i></div>
+          <h3>{{ title }}</h3>
+          <p>{{ text }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sv-section sv-section-alt">
+  <div class="container-fluid px-4">
+    <p class="sv-eyebrow">The roster</p>
+    <h2 class="sv-section-title">Nine algorithms, fully instrumented</h2>
+    <div class="row g-3 mt-2">
+      {% for algo in algorithms %}
+      <div class="col-6 col-md-4 col-xl-3">
+        <a href="{{ url_for('views.visualizer') }}?algo={{ algo.key }}" class="sv-algo-chip">
+          <span class="sv-algo-chip-index">{{ '%02d' % loop.index }}</span>
+          <span>{{ algo.name }}</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="sv-cta">
+  <div class="container-fluid px-4 text-center">
+    <h2 class="sv-section-title">Ready to see it sort?</h2>
+    <p class="sv-hero-sub mx-auto" style="max-width: 560px;">Pick an algorithm, choose your array, and watch every comparison unfold bar by bar.</p>
+    <a href="{{ url_for('views.visualizer') }}" class="sv-btn sv-btn-gold">
+      <i class="fa-solid fa-play"></i> Start Visualizing
+    </a>
+  </div>
+</section>
+
+{% endblock %}

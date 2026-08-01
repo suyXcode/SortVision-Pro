@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Learn — SortVision Pro{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 sv-learn-page">
+  <p class="sv-eyebrow">The learning hub</p>
+  <h1 class="sv-section-title">Every algorithm, explained properly</h1>
+  <p class="sv-hero-sub">Descriptions, working principles, complexity, trade-offs, and pseudocode — pick an algorithm to begin.</p>
+
+  <div class="row mt-4">
+    <div class="col-lg-3">
+      <div class="sv-learn-nav" id="learnNav">
+        {% for algo in algorithms %}
+        <button class="sv-learn-nav-item {% if loop.first %}active{% endif %}" data-key="{{ algo.key }}" type="button">
+          <span class="sv-algo-chip-index">{{ '%02d' % loop.index }}</span> {{ algo.name }}
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-lg-9">
+      <div class="sv-card" id="learnDetail">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <h2 class="sv-detail-title" id="detailName">—</h2>
+          <div class="sv-legend">
+            <span class="sv-badge" id="detailStable">Stable: —</span>
+            <span class="sv-badge" id="detailInPlace">In Place: —</span>
+            <span class="sv-badge" id="detailAdaptive">Adaptive: —</span>
+          </div>
+        </div>
+
+        <div class="sv-complexity-grid mt-3">
+          <div><span>Best Case</span><strong id="detailBest">—</strong></div>
+          <div><span>Average Case</span><strong id="detailAvg">—</strong></div>
+          <div><span>Worst Case</span><strong id="detailWorst">—</strong></div>
+          <div><span>Space</span><strong id="detailSpace">—</strong></div>
+        </div>
+
+        <p class="sv-learn-label mt-4">Description</p>
+        <p class="sv-learn-text" id="detailDescription">—</p>
+
+        <p class="sv-learn-label">Working Principle</p>
+        <p class="sv-learn-text" id="detailPrinciple">—</p>
+
+        <div class="row g-4 mt-1">
+          <div class="col-md-4">
+            <p class="sv-learn-label">Advantages</p>
+            <ul class="sv-learn-list" id="detailAdvantages"></ul>
+          </div>
+          <div class="col-md-4">
+            <p class="sv-learn-label">Disadvantages</p>
+            <ul class="sv-learn-list" id="detailDisadvantages"></ul>
+          </div>
+          <div class="col-md-4">
+            <p class="sv-learn-label">Applications</p>
+            <ul class="sv-learn-list" id="detailApplications"></ul>
+          </div>
+        </div>
+
+        <p class="sv-learn-label">Pseudo Code</p>
+        <pre class="sv-pseudocode" id="detailPseudocode">—</pre>
+
+        <a href="{{ url_for('views.visualizer') }}" class="sv-btn sv-btn-gold" id="detailVisualizeLink">
+          <i class="fa-solid fa-play"></i> Visualize This Algorithm
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/learn.js') }}"></script>
+{% endblock %}

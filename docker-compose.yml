@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  sortvision-pro:
+    build: .
+    image: sortvision-pro:latest
+    container_name: sortvision-pro
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_CONFIG=production
+      - PORT=8000
+      - SECRET_KEY=change-this-in-production
+      - CORS_ORIGINS=*
+    restart: unless-stopped

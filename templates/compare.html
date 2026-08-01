@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Compare — SortVision Pro{% endblock %}
+
+{% block content %}
+<div class="sv-compare-page">
+  <div class="container-fluid px-4">
+    <p class="sv-eyebrow">Head to head</p>
+    <h1 class="sv-section-title">Compare algorithms on identical data</h1>
+    <p class="sv-hero-sub">Pick two or more algorithms, generate one shared array, and race them — every stat lands side by side.</p>
+
+    <div class="sv-card mt-4">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="sv-label">Array Size <span id="cSizeVal" class="sv-label-val">40</span></label>
+          <input type="range" class="form-range sv-range" id="cArraySize" min="5" max="150" value="40">
+        </div>
+        <div class="col-md-2">
+          <label class="sv-label">Min Value</label>
+          <input type="number" class="form-control sv-input" id="cMinValue" value="5">
+        </div>
+        <div class="col-md-2">
+          <label class="sv-label">Max Value</label>
+          <input type="number" class="form-control sv-input" id="cMaxValue" value="500">
+        </div>
+        <div class="col-md-4">
+          <button class="sv-btn sv-btn-gold w-100" id="cGenerateBtn"><i class="fa-solid fa-dice"></i> Generate Shared Array</button>
+        </div>
+      </div>
+
+      <hr class="sv-footer-rule">
+
+      <label class="sv-label mb-2">Select 2 or more algorithms</label>
+      <div class="sv-algo-checks" id="algoChecks">
+        {% for algo in algorithms %}
+        <label class="sv-check-chip">
+          <input type="checkbox" value="{{ algo.key }}" {% if loop.index <= 2 %}checked{% endif %}>
+          <span>{{ algo.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+
+      <button class="sv-btn sv-btn-gold mt-3" id="runCompareBtn"><i class="fa-solid fa-scale-balanced"></i> Run Comparison</button>
+      <button class="sv-btn sv-btn-outline mt-3" id="cDownloadBtn" disabled><i class="fa-solid fa-file-arrow-down"></i> Download Comparison Report</button>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <div class="col-lg-6">
+        <div class="sv-card">
+          <h6 class="sv-card-heading"><i class="fa-solid fa-clock"></i> Execution Time (ms)</h6>
+          <canvas id="chartTime" height="220"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="sv-card">
+          <h6 class="sv-card-heading"><i class="fa-solid fa-code-compare"></i> Comparisons</h6>
+          <canvas id="chartComparisons" height="220"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="sv-card">
+          <h6 class="sv-card-heading"><i class="fa-solid fa-arrows-left-right"></i> Swaps</h6>
+          <canvas id="chartSwaps" height="220"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="sv-card">
+          <h6 class="sv-card-heading"><i class="fa-solid fa-memory"></i> Memory Usage (KB)</h6>
+          <canvas id="chartMemory" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="sv-card mt-1">
+      <h6 class="sv-card-heading"><i class="fa-solid fa-table"></i> Full Results Table</h6>
+      <div class="table-responsive">
+        <table class="table sv-table" id="compareTable">
+          <thead>
+            <tr>
+              <th>Algorithm</th><th>Time (ms)</th><th>Comparisons</th><th>Swaps</th>
+              <th>Memory (KB)</th><th>Stable</th><th>In Place</th><th>Sorted</th>
+            </tr>
+          </thead>
+          <tbody id="compareTableBody">
+            <tr><td colspan="8" class="text-center sv-table-empty">Run a comparison to see results here.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+{% endblock %}

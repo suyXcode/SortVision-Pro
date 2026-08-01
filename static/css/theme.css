@@ -1,0 +1,89 @@
+/*
+  theme.css
+  Design tokens for the "Royal" theme: dark navy backgrounds, gold accents,
+  glassmorphism surfaces. A [data-theme="light"] override block provides the
+  light theme variant using the same token names, so style.css never needs
+  to know which theme is active.
+*/
+
+:root,
+[data-theme="dark"] {
+  /* Core palette */
+  --navy-950: #05070f;
+  --navy-900: #0a0e1f;
+  --navy-850: #0e1327;
+  --navy-800: #131a33;
+  --navy-700: #1b2340;
+  --navy-600: #262f52;
+
+  --gold-300: #f4e2a8;
+  --gold-400: #e8c766;
+  --gold-500: #d4af37;
+  --gold-600: #b8912a;
+
+  --text-primary: #eef0f7;
+  --text-secondary: #a9b0c9;
+  --text-muted: #6b7392;
+
+  --surface-glass: rgba(255, 255, 255, 0.045);
+  --surface-glass-border: rgba(212, 175, 55, 0.16);
+  --surface-glass-hover: rgba(255, 255, 255, 0.075);
+
+  --bg-body: radial-gradient(circle at 15% -10%, #182248 0%, transparent 45%),
+             radial-gradient(circle at 100% 0%, #241a3d 0%, transparent 40%),
+             var(--navy-950);
+
+  /* Bar / action colors */
+  --bar-default: #3d6ec2;
+  --bar-default-2: #5b8de0;
+  --bar-compare: #e0475a;
+  --bar-swap: #38c98f;
+  --bar-min: #f2c94c;
+  --bar-pivot: #b06ee0;
+  --bar-sorted: #e69a2c;
+
+  --shadow-soft: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 9px;
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --navy-950: #f6f4ee;
+  --navy-900: #fbf9f3;
+  --navy-850: #ffffff;
+  --navy-800: #ffffff;
+  --navy-700: #eee9db;
+  --navy-600: #e2dbc6;
+
+  --gold-300: #a9791b;
+  --gold-400: #8f6614;
+  --gold-500: #7a5713;
+  --gold-600: #5f4310;
+
+  --text-primary: #1c1a12;
+  --text-secondary: #4a4636;
+  --text-muted: #837c63;
+
+  --surface-glass: rgba(20, 16, 4, 0.035);
+  --surface-glass-border: rgba(122, 87, 19, 0.22);
+  --surface-glass-hover: rgba(20, 16, 4, 0.06);
+
+  --bg-body: radial-gradient(circle at 15% -10%, #efe6c8 0%, transparent 45%),
+             radial-gradient(circle at 100% 0%, #f1ddd0 0%, transparent 40%),
+             var(--navy-950);
+
+  --bar-default: #3d6ec2;
+  --bar-default-2: #2f57a3;
+  --bar-compare: #c73347;
+  --bar-swap: #1f9d6c;
+  --bar-min: #b8860b;
+  --bar-pivot: #8b4fc7;
+  --bar-sorted: #c97a12;
+
+  --shadow-soft: 0 14px 40px rgba(70, 55, 10, 0.12);
+
+  color-scheme: light;
+}

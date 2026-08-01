@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found — SortVision Pro{% endblock %}
+
+{% block content %}
+<div class="sv-404">
+  <div class="sv-404-code">404</div>
+  <h1 class="sv-section-title">This array index is out of bounds.</h1>
+  <p class="sv-hero-sub">The page you're looking for doesn't exist. Let's get you back to sorted ground.</p>
+  <a href="{{ url_for('views.home') }}" class="sv-btn sv-btn-gold"><i class="fa-solid fa-house"></i> Back to Home</a>
+</div>
+{% endblock %}
