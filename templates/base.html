@@ -3,8 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}SortVision Pro — Sorting Algorithm Visualizer{% endblock %}</title>
-  <meta name="description" content="A premium interactive platform for visualizing, comparing, and learning sorting algorithms.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0a0e1f">
+  <meta name="author" content="SortVision Pro">
+
+  <title>{% block title %}SortVision Pro — Premium Sorting Algorithm Visualizer{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ site_description }}{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}sorting algorithm visualizer, bubble sort, quick sort, merge sort, heap sort, algorithm animation, learn sorting algorithms, compare algorithms, data structures and algorithms{% endblock %}">
+  <link rel="canonical" href="{% block canonical %}{{ canonical_url() }}{% endblock %}">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+
+  <!-- Open Graph / Facebook / LinkedIn -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site_name }}">
+  <meta property="og:url" content="{{ canonical_url() }}">
+  <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ site_url }}{{ url_for('static', filename='img/og-image.png') }}{% endblock %}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ self.og_title() }}">
+  <meta name="twitter:description" content="{{ self.og_description() }}">
+  <meta name="twitter:image" content="{{ self.og_image() }}">
+
+  <!-- Structured data (JSON-LD); pages can override via the structured_data block -->
+  {% block structured_data %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": {{ site_name | tojson }},
+    "url": {{ (site_url + "/") | tojson }},
+    "description": {{ site_description | tojson }},
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any (runs in a web browser)",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  {% endblock %}
 
   <!-- Fonts: Playfair Display (display/royal headers), Inter (body), JetBrains Mono (stats/data) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

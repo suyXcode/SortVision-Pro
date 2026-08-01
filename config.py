@@ -20,6 +20,19 @@ class BaseConfig:
     MAX_CONTENT_LENGTH: int = 1 * 1024 * 1024  # 1 MB request body cap
     CORS_ORIGINS: str = os.environ.get("CORS_ORIGINS", "*")
 
+    # SEO / canonical URL settings. SITE_URL should be the deployed,
+    # protocol-included, trailing-slash-free origin (e.g.
+    # "https://sortvisionpro.com") — set it as an env var on your host so
+    # canonical links, sitemap.xml, and Open Graph tags resolve correctly
+    # instead of defaulting to localhost.
+    SITE_URL: str = os.environ.get("SITE_URL", "http://localhost:5000").rstrip("/")
+    SITE_NAME: str = "SortVision Pro"
+    SITE_DESCRIPTION: str = (
+        "A premium interactive platform for visualizing, comparing, and "
+        "learning sorting algorithms with real-time animation, execution "
+        "statistics, and side-by-side algorithm comparison."
+    )
+
 
 class DevelopmentConfig(BaseConfig):
     DEBUG: bool = True

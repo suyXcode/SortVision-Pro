@@ -81,6 +81,10 @@ flask --app app run --debug
 
 The app is now available at **http://localhost:5000**.
 
+> By default, canonical links/sitemap/OG tags point at `http://localhost:5000`.
+> Set the `SITE_URL` environment variable once you have a real domain (see
+> [docs/HOSTING.md](docs/HOSTING.md)) — no other config changes needed.
+
 ### 4. Run with Docker instead
 
 ```bash
@@ -118,22 +122,27 @@ sortvision-pro/
 │   └── radix_sort.py
 │
 ├── routes/                    # Flask Blueprints
-│   ├── views.py                # HTML page routes
-│   └── api.py                  # JSON API routes
+│   ├── views.py                # HTML page routes (server-renders algorithm content)
+│   ├── api.py                   # JSON API routes
+│   └── seo.py                    # robots.txt + dynamic sitemap.xml
 │
 ├── utils/                     # Shared helpers
 │   ├── array_generator.py      # Random/manual array generation + validation
 │   └── helpers.py               # Response envelopes + report text builders
 │
 ├── templates/                 # Jinja2 templates
-│   ├── base.html
+│   ├── base.html                # SEO meta, Open Graph, JSON-LD, favicons
 │   ├── index.html
 │   ├── visualizer.html
 │   ├── compare.html
-│   ├── learn.html
+│   ├── learn.html               # All algorithm content server-rendered
 │   └── 404.html
 │
 ├── static/
+│   ├── site.webmanifest
+│   ├── img/
+│   │   ├── favicon.svg / favicon.ico / apple-touch-icon.png / icon-512.png
+│   │   └── og-image.png         # Branded 1200×630 social preview
 │   ├── css/
 │   │   ├── theme.css            # Design tokens (royal navy & gold)
 │   │   └── style.css            # Components & layout
@@ -142,9 +151,10 @@ sortvision-pro/
 │       ├── charts.js            # Chart.js factory helpers
 │       ├── visualizer.js        # Main dashboard logic
 │       ├── compare.js           # Comparison page logic
-│       └── learn.js             # Learning hub logic
+│       └── learn.js             # Learning hub panel switcher
 │
-└── docs/                      # Additional documentation (API reference, etc.)
+└── docs/
+    └── HOSTING.md              # Full deployment + SEO checklist
 ```
 
 ---
@@ -168,6 +178,9 @@ All endpoints are prefixed with `/api` and return a consistent envelope:
 Algorithm keys: `bubble`, `selection`, `insertion`, `merge`, `quick`,
 `heap`, `shell`, `counting`, `radix`.
 
+Two additional non-API, non-JSON routes exist for crawlers:
+`GET /robots.txt` and `GET /sitemap.xml` (see `routes/seo.py`).
+
 ---
 
 ## Screenshots
@@ -186,6 +199,10 @@ Algorithm keys: `bubble`, `selection`, `insertion`, `merge`, `quick`,
 
 ## Deployment Guide
 
+Full, step-by-step instructions (including custom domains, HTTPS, and a
+post-deploy SEO checklist) live in **[docs/HOSTING.md](docs/HOSTING.md)**.
+Quick summary:
+
 ### Render
 
 1. Push this repository to GitHub.
@@ -194,20 +211,56 @@ Algorithm keys: `bubble`, `selection`, `insertion`, `merge`, `quick`,
 3. Or manually: **New → Web Service**, build command
    `pip install -r requirements.txt`, start command
    `gunicorn --bind 0.0.0.0:$PORT app:app`.
+4. Set `SITE_URL` to your Render URL (or custom domain) so canonical
+   links, the sitemap, and social previews resolve correctly.
 
 ### Railway
 
 1. Push this repository to GitHub.
 2. In Railway, **New Project → Deploy from GitHub repo**.
-3. Railway auto-detects the `Procfile`; no further configuration is
-   required beyond setting `SECRET_KEY` in the environment variables tab.
+3. Railway auto-detects the `Procfile`; set `SECRET_KEY` and `SITE_URL` in
+   the environment variables tab.
 
 ### Docker (any host)
 
 ```bash
 docker build -t sortvision-pro .
-docker run -p 8000:8000 -e SECRET_KEY=your-secret sortvision-pro
+docker run -p 8000:8000 -e SECRET_KEY=your-secret -e SITE_URL=https://your-domain.com sortvision-pro
 ```
+
+See **[docs/HOSTING.md](docs/HOSTING.md)** for the full VPS + Nginx +
+Let's Encrypt HTTPS walkthrough.
+
+---
+
+## SEO Features
+
+The app is built to be crawlable and shareable out of the box, not just
+functional:
+
+- **Server-rendered content**: every algorithm's description, working
+  principle, complexity, and pseudocode is rendered directly into the HTML
+  on `/learn` and `/visualizer` (not fetched client-side after load), so
+  search engines see full text immediately.
+- **Unique per-page `<title>` and meta description** on every route,
+  including a dynamically generated title/description per algorithm on
+  `/visualizer?algo=<key>`.
+- **Canonical URLs** on every page via a shared `canonical_url()` template
+  helper, driven by the `SITE_URL` environment variable.
+- **Open Graph + Twitter Card tags** (title, description, and a generated
+  1200×630 branded preview image at `static/img/og-image.png`) so links
+  shared on social media / Slack / Discord render a real preview card.
+- **JSON-LD structured data**: `WebApplication` schema site-wide, a
+  `HowTo` schema per algorithm on the visualizer page, and an `ItemList`
+  schema of all nine algorithms on the learning hub — validate with
+  [Google's Rich Results Test](https://search.google.com/test/rich-results).
+- **`robots.txt`** and a dynamically generated **`sitemap.xml`**
+  (`routes/seo.py`), listing every page plus a deep link per algorithm
+  (e.g. `/visualizer?algo=quick`), so algorithm-specific searches can land
+  directly on the right page.
+- **Semantic heading hierarchy** (one `<h1>` per page, ordered `<h2>`/`<h3>`
+  beneath it) and a proper favicon/manifest set for browser tabs and
+  home-screen installs.
 
 ---
 

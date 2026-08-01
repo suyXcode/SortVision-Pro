@@ -15,6 +15,7 @@ from flask_cors import CORS
 
 from config import get_config
 from routes.api import api_bp
+from routes.seo import seo_bp
 from routes.views import views_bp
 
 
@@ -27,10 +28,32 @@ def create_app(config_name: str | None = None) -> Flask:
 
     app.register_blueprint(views_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(seo_bp)
 
     register_error_handlers(app)
+    register_template_context(app)
 
     return app
+
+
+def register_template_context(app: Flask) -> None:
+    """Expose SEO-related config and helpers to every Jinja template."""
+
+    @app.context_processor
+    def inject_site_meta():
+        from flask import request
+
+        def canonical_url(path: str | None = None) -> str:
+            """Build an absolute canonical URL for the given path (defaults to the current request path)."""
+            target_path = path if path is not None else request.path
+            return app.config["SITE_URL"] + target_path
+
+        return {
+            "site_url": app.config["SITE_URL"],
+            "site_name": app.config["SITE_NAME"],
+            "site_description": app.config["SITE_DESCRIPTION"],
+            "canonical_url": canonical_url,
+        }
 
 
 def register_error_handlers(app: Flask) -> None:

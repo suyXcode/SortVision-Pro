@@ -1,5 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Visualizer — SortVision Pro{% endblock %}
+{% block title %}{{ default_info.name }} Visualizer — Watch It Sort Step by Step | SortVision Pro{% endblock %}
+{% block meta_description %}Visualize {{ default_info.name }} in real time: {{ default_info.description }} Best case {{ default_info.bestCase }}, worst case {{ default_info.worstCase }}, space {{ default_info.spaceComplexity }}.{% endblock %}
+{% block canonical %}{{ canonical_url('/visualizer') }}{% if default_key != 'bubble' %}?algo={{ default_key }}{% endif %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": {{ ("How " + default_info.name + " Works") | tojson }},
+  "description": {{ default_info.workingPrinciple | tojson }},
+  "step": [
+    { "@type": "HowToStep", "text": {{ default_info.description | tojson }} },
+    { "@type": "HowToStep", "text": {{ default_info.workingPrinciple | tojson }} }
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="sv-dashboard" id="visualizerRoot">
@@ -45,7 +62,7 @@
       <h6 class="sv-sidebar-heading"><i class="fa-solid fa-layer-group"></i> Algorithm</h6>
       <select class="form-select sv-input" id="algoSelect">
         {% for algo in algorithms %}
-        <option value="{{ algo.key }}">{{ algo.name }}</option>
+        <option value="{{ algo.key }}" {% if algo.key == default_key %}selected{% endif %}>{{ algo.name }}</option>
         {% endfor %}
       </select>
     </div>
@@ -75,12 +92,12 @@
   <section class="sv-stage">
     <div class="sv-stage-header">
       <div>
-        <h1 class="sv-stage-title" id="algoTitle">Bubble Sort</h1>
+        <h1 class="sv-stage-title" id="algoTitle">{{ default_info.name }}</h1>
         <p class="sv-stage-sub" id="algoBadgeRow">
-          <span class="sv-badge" id="badgeBest">Best: —</span>
-          <span class="sv-badge" id="badgeAvg">Avg: —</span>
-          <span class="sv-badge" id="badgeWorst">Worst: —</span>
-          <span class="sv-badge" id="badgeSpace">Space: —</span>
+          <span class="sv-badge" id="badgeBest">Best: {{ default_info.bestCase }}</span>
+          <span class="sv-badge" id="badgeAvg">Avg: {{ default_info.averageCase }}</span>
+          <span class="sv-badge" id="badgeWorst">Worst: {{ default_info.worstCase }}</span>
+          <span class="sv-badge" id="badgeSpace">Space: {{ default_info.spaceComplexity }}</span>
         </p>
       </div>
       <div class="sv-legend">
@@ -137,37 +154,47 @@
     </div>
 
     <div class="sv-card mt-3" id="learnPanel">
-      <h6 class="sv-card-heading"><i class="fa-solid fa-graduation-cap"></i> How <span id="learnAlgoName">this algorithm</span> Works</h6>
+      <h2 class="sv-card-heading"><i class="fa-solid fa-graduation-cap"></i> How <span id="learnAlgoName">{{ default_info.name }}</span> Works</h2>
       <div class="row g-4">
         <div class="col-lg-6">
           <p class="sv-learn-label">Description</p>
-          <p id="learnDescription" class="sv-learn-text">—</p>
+          <p id="learnDescription" class="sv-learn-text">{{ default_info.description }}</p>
           <p class="sv-learn-label">Working Principle</p>
-          <p id="learnPrinciple" class="sv-learn-text">—</p>
+          <p id="learnPrinciple" class="sv-learn-text">{{ default_info.workingPrinciple }}</p>
         </div>
         <div class="col-lg-6">
           <div class="row g-3">
             <div class="col-md-6">
               <p class="sv-learn-label">Advantages</p>
-              <ul class="sv-learn-list" id="learnAdvantages"></ul>
+              <ul class="sv-learn-list" id="learnAdvantages">
+                {% for a in default_info.advantages %}<li>{{ a }}</li>{% endfor %}
+              </ul>
             </div>
             <div class="col-md-6">
               <p class="sv-learn-label">Disadvantages</p>
-              <ul class="sv-learn-list" id="learnDisadvantages"></ul>
+              <ul class="sv-learn-list" id="learnDisadvantages">
+                {% for a in default_info.disadvantages %}<li>{{ a }}</li>{% endfor %}
+              </ul>
             </div>
           </div>
           <p class="sv-learn-label mt-2">Applications</p>
-          <ul class="sv-learn-list" id="learnApplications"></ul>
+          <ul class="sv-learn-list" id="learnApplications">
+            {% for a in default_info.applications %}<li>{{ a }}</li>{% endfor %}
+          </ul>
         </div>
       </div>
       <p class="sv-learn-label">Pseudo Code</p>
-      <pre class="sv-pseudocode" id="learnPseudocode">—</pre>
+      <pre class="sv-pseudocode" id="learnPseudocode">{{ default_info.pseudoCode }}</pre>
     </div>
   </section>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<script>
+  window.SV_DEFAULT_ALGO_KEY = {{ default_key | tojson }};
+  window.SV_DEFAULT_ALGO_INFO = {{ default_info | tojson }};
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
 <script src="{{ url_for('static', filename='js/visualizer.js') }}"></script>

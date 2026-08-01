@@ -1,68 +1,98 @@
 {% extends "base.html" %}
-{% block title %}Learn — SortVision Pro{% endblock %}
+{% block title %}Learn Sorting Algorithms — Complexity, Pseudocode & More | SortVision Pro{% endblock %}
+{% block meta_description %}A complete guide to Bubble, Selection, Insertion, Merge, Quick, Heap, Shell, Counting, and Radix Sort: descriptions, working principles, time and space complexity, pros and cons, real-world applications, and pseudocode.{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Sorting Algorithms",
+  "itemListElement": [
+    {% for d in algo_details %}
+    {
+      "@type": "ListItem",
+      "position": {{ loop.index }},
+      "name": {{ d.name | tojson }},
+      "url": {{ (site_url + url_for('views.visualizer') + "?algo=" + d.key) | tojson }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid px-4 sv-learn-page">
   <p class="sv-eyebrow">The learning hub</p>
   <h1 class="sv-section-title">Every algorithm, explained properly</h1>
-  <p class="sv-hero-sub">Descriptions, working principles, complexity, trade-offs, and pseudocode — pick an algorithm to begin.</p>
+  <p class="sv-hero-sub">Descriptions, working principles, complexity, trade-offs, and pseudocode for all nine algorithms — pick one to jump straight to it.</p>
 
   <div class="row mt-4">
     <div class="col-lg-3">
-      <div class="sv-learn-nav" id="learnNav">
-        {% for algo in algorithms %}
-        <button class="sv-learn-nav-item {% if loop.first %}active{% endif %}" data-key="{{ algo.key }}" type="button">
-          <span class="sv-algo-chip-index">{{ '%02d' % loop.index }}</span> {{ algo.name }}
+      <nav class="sv-learn-nav" id="learnNav" aria-label="Algorithm list">
+        {% for d in algo_details %}
+        <button class="sv-learn-nav-item {% if loop.first %}active{% endif %}" data-key="{{ d.key }}" type="button" aria-controls="detail-{{ d.key }}">
+          <span class="sv-algo-chip-index">{{ '%02d' % loop.index }}</span> {{ d.name }}
         </button>
         {% endfor %}
-      </div>
+      </nav>
     </div>
+
     <div class="col-lg-9">
-      <div class="sv-card" id="learnDetail">
+      {% for d in algo_details %}
+      <article class="sv-card sv-learn-detail" id="detail-{{ d.key }}" data-key="{{ d.key }}" {% if not loop.first %}hidden{% endif %}>
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-          <h2 class="sv-detail-title" id="detailName">—</h2>
+          <h2 class="sv-detail-title">{{ d.name }}</h2>
           <div class="sv-legend">
-            <span class="sv-badge" id="detailStable">Stable: —</span>
-            <span class="sv-badge" id="detailInPlace">In Place: —</span>
-            <span class="sv-badge" id="detailAdaptive">Adaptive: —</span>
+            <span class="sv-badge">Stable: {{ 'Yes' if d.isStable else 'No' }}</span>
+            <span class="sv-badge">In Place: {{ 'Yes' if d.isInPlace else 'No' }}</span>
+            <span class="sv-badge">Adaptive: {{ 'Yes' if d.isAdaptive else 'No' }}</span>
           </div>
         </div>
 
         <div class="sv-complexity-grid mt-3">
-          <div><span>Best Case</span><strong id="detailBest">—</strong></div>
-          <div><span>Average Case</span><strong id="detailAvg">—</strong></div>
-          <div><span>Worst Case</span><strong id="detailWorst">—</strong></div>
-          <div><span>Space</span><strong id="detailSpace">—</strong></div>
+          <div><span>Best Case</span><strong>{{ d.bestCase }}</strong></div>
+          <div><span>Average Case</span><strong>{{ d.averageCase }}</strong></div>
+          <div><span>Worst Case</span><strong>{{ d.worstCase }}</strong></div>
+          <div><span>Space</span><strong>{{ d.spaceComplexity }}</strong></div>
         </div>
 
-        <p class="sv-learn-label mt-4">Description</p>
-        <p class="sv-learn-text" id="detailDescription">—</p>
+        <h3 class="sv-learn-label mt-4">Description</h3>
+        <p class="sv-learn-text">{{ d.description }}</p>
 
-        <p class="sv-learn-label">Working Principle</p>
-        <p class="sv-learn-text" id="detailPrinciple">—</p>
+        <h3 class="sv-learn-label">Working Principle</h3>
+        <p class="sv-learn-text">{{ d.workingPrinciple }}</p>
 
         <div class="row g-4 mt-1">
           <div class="col-md-4">
-            <p class="sv-learn-label">Advantages</p>
-            <ul class="sv-learn-list" id="detailAdvantages"></ul>
+            <h3 class="sv-learn-label">Advantages</h3>
+            <ul class="sv-learn-list">
+              {% for a in d.advantages %}<li>{{ a }}</li>{% endfor %}
+            </ul>
           </div>
           <div class="col-md-4">
-            <p class="sv-learn-label">Disadvantages</p>
-            <ul class="sv-learn-list" id="detailDisadvantages"></ul>
+            <h3 class="sv-learn-label">Disadvantages</h3>
+            <ul class="sv-learn-list">
+              {% for a in d.disadvantages %}<li>{{ a }}</li>{% endfor %}
+            </ul>
           </div>
           <div class="col-md-4">
-            <p class="sv-learn-label">Applications</p>
-            <ul class="sv-learn-list" id="detailApplications"></ul>
+            <h3 class="sv-learn-label">Applications</h3>
+            <ul class="sv-learn-list">
+              {% for a in d.applications %}<li>{{ a }}</li>{% endfor %}
+            </ul>
           </div>
         </div>
 
-        <p class="sv-learn-label">Pseudo Code</p>
-        <pre class="sv-pseudocode" id="detailPseudocode">—</pre>
+        <h3 class="sv-learn-label">Pseudo Code</h3>
+        <pre class="sv-pseudocode">{{ d.pseudoCode }}</pre>
 
-        <a href="{{ url_for('views.visualizer') }}" class="sv-btn sv-btn-gold" id="detailVisualizeLink">
-          <i class="fa-solid fa-play"></i> Visualize This Algorithm
+        <a href="{{ url_for('views.visualizer') }}?algo={{ d.key }}" class="sv-btn sv-btn-gold">
+          <i class="fa-solid fa-play"></i> Visualize {{ d.name }}
         </a>
-      </div>
+      </article>
+      {% endfor %}
     </div>
   </div>
 </div>

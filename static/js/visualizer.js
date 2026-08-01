@@ -474,6 +474,13 @@
     els.fullscreenBtn.addEventListener("click", toggleFullscreen);
     initFullscreenListeners();
 
+    // Server already rendered the default algorithm's metadata into the
+    // page (see templates/visualizer.html) — seed the cache with it so we
+    // don't re-fetch something we already have on first load.
+    if (window.SV_DEFAULT_ALGO_KEY && window.SV_DEFAULT_ALGO_INFO) {
+      state.algoMeta[window.SV_DEFAULT_ALGO_KEY] = window.SV_DEFAULT_ALGO_INFO;
+    }
+
     // Preselect algorithm from ?algo= query param, if present.
     const params = new URLSearchParams(window.location.search);
     const preselect = params.get("algo");

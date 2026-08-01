@@ -1,0 +1,13 @@
+{
+  "name": "SortVision Pro — Sorting Algorithm Visualizer",
+  "short_name": "SortVision Pro",
+  "description": "A premium interactive platform for visualizing, comparing, and learning sorting algorithms.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070f",
+  "theme_color": "#0a0e1f",
+  "icons": [
+    { "src": "/static/img/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/static/img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
